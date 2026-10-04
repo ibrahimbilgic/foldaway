@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to solve arrow puzzles: a step-by-step method</title>
+<meta name="description" content="How arrow escape puzzles work and how to solve them: check the line in front of each arrow head, start with free arrows and unlock the most. Includes a small puzzle you can play right on the page.">
+<link rel="canonical" href="https://ibrahimbilgic.github.io/foldaway/how-to-solve-arrow-puzzles.html">
+<link rel="stylesheet" href="style.css">
+<style>
+.demo{background:var(--sheet);border:1px solid var(--edge);border-radius:24px;padding:16px;margin:18px 0}
+.demo svg{display:block;width:100%;max-width:420px;margin:0 auto;touch-action:manipulation}
+.demo .cellbg{fill:var(--ground);stroke:var(--edge)}
+.demo g.ar{cursor:pointer;transition:transform .45s ease-in,opacity .45s}
+.demo g.ar:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.demo g.ar.gone{opacity:0;pointer-events:none}
+.demo g.ar.shake{animation:sh .35s}
+@keyframes sh{0%,100%{transform:translate(0,0)}25%{transform:translate(-4px,0)}75%{transform:translate(4px,0)}}
+@media (prefers-reduced-motion:reduce){.demo g.ar,.demo g.ar.shake{transition:none;animation:none}}
+.demo .ray{stroke:var(--ink);stroke-width:2;stroke-dasharray:3 5;opacity:.55;fill:none}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;margin-top:12px}
+.bar button{font:600 15px/1 inherit;padding:10px 16px;min-height:44px;border-radius:99px;border:1px solid var(--accent-deep);background:var(--accent-soft);color:var(--accent-deep);cursor:pointer}
+.bar label{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink2)}
+#msg{min-height:3.2em;color:var(--ink);margin:10px 0 0}
+ol.steps{padding-left:0;list-style:none;counter-reset:n}
+ol.steps li{counter-increment:n;background:var(--sheet);border:1px solid var(--edge);border-radius:18px;padding:14px 16px 14px 56px;margin:10px 0;position:relative}
+ol.steps li::before{content:counter(n);position:absolute;left:14px;top:12px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:600 16px Fredoka,system-ui,sans-serif}
+ol.steps li strong{display:block}
+details{border-top:1px solid var(--edge);padding:10px 0}summary{cursor:pointer;font-weight:600;color:var(--ink)}
+.btn{display:inline-block;background:var(--accent-deep);color:#fff;font-weight:600;text-decoration:none;padding:12px 20px;border-radius:99px;min-height:44px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"How to solve an arrow escape puzzle","description":"A method for clearing arrow escape puzzles by checking the line in front of each arrow head.","step":[{"@type":"HowToStep","position":1,"name":"Look only at the head","text":"An arrow leaves the sheet in the direction its head points. The body, the bends and the tail do not matter for the exit: draw an imaginary line from the head to the edge of the board."},{"@type":"HowToStep","position":2,"name":"Check the line for anything in the way","text":"If every cell on that line is empty, the arrow is free. If any part of another arrow sits on the line, even its tail end, the arrow is blocked by that arrow."},{"@type":"HowToStep","position":3,"name":"Tap a free arrow first","text":"A free arrow always leaves safely, and removing an arrow can only open space, never close it, so taking a free arrow can never make the sheet unsolvable."},{"@type":"HowToStep","position":4,"name":"Pick the free arrow that unlocks the most","text":"When several arrows are free, prefer the one that is the only thing blocking other arrows. Removing it frees those arrows at once. The in-game hint uses the same idea."},{"@type":"HowToStep","position":5,"name":"Do not tap to test","text":"Tapping a blocked arrow costs a heart (there are three per sheet) and counts as a mistake. Hold an arrow instead to see its path first; holding never costs a heart."}]}</script>
+</head>
+<body>
+<main>
+  <header class="brand"><a href="./"><svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 22 L36 6 L24 34 L19 24 Z" fill="#0B8791"/><path d="M19 24 L36 6 L14 21 Z" fill="#086870"/></svg><strong>Foldaway</strong></a></header>
+  <h1 style="margin-top:18px">How to solve arrow puzzles</h1>
+  <p class="lede">In an arrow escape puzzle you tap arrows to slide them off the board. The rule is short, the order is the puzzle. Try the small sheet below, then read the method.</p>
+
+  <section class="demo" aria-labelledby="dh">
+    <h2 id="dh" style="margin-top:0">Try a small sheet</h2>
+    <p style="margin-top:0">Tap an arrow. If nothing is in front of its head, it leaves. If something is, it bounces and counts as a mistake. Eight arrows, one way to learn it.</p>
+    <svg id="b" viewBox="0 0 312 260" role="group" aria-label="Arrow puzzle board, 6 by 5"></svg>
+    <p id="msg" role="status" aria-live="polite">Free arrows have nothing between their head and the edge.</p>
+    <div class="bar"><label><input type="checkbox" id="rays"> Show the line in front of each head</label><span id="cnt"></span><button id="reset" type="button">Start over</button></div>
+  </section>
+
+  <h2>The method in five steps</h2>
+  <ol class="steps">
+  <li><strong>Look only at the head</strong>An arrow leaves the sheet in the direction its head points. The body, the bends and the tail do not matter for the exit: draw an imaginary line from the head to the edge of the board.</li>
+  <li><strong>Check the line for anything in the way</strong>If every cell on that line is empty, the arrow is free. If any part of another arrow sits on the line, even its tail end, the arrow is blocked by that arrow.</li>
+  <li><strong>Tap a free arrow first</strong>A free arrow always leaves safely, and removing an arrow can only open space, never close it, so taking a free arrow can never make the sheet unsolvable.</li>
+  <li><strong>Pick the free arrow that unlocks the most</strong>When several arrows are free, prefer the one that is the only thing blocking other arrows. Removing it frees those arrows at once. The in-game hint uses the same idea.</li>
+  <li><strong>Do not tap to test</strong>Tapping a blocked arrow costs a heart (there are three per sheet) and counts as a mistake. Hold an arrow instead to see its path first; holding never costs a heart.</li>
+  </ol>
+
+  <div class="sheet">
+    <h2 style="margin-top:0">What the small sheet teaches</h2>
+    <p>At the start only two arrows can leave. One of them sits on the line of three others, so it is the right first move: once it is gone, a whole group is free. The arrow that bends is a good reminder that only its head counts for leaving, while its whole body can still be in somebody else's way.</p>
+    <p>Whenever you feel stuck on a bigger sheet, list the free arrows, then ask of each one: how many arrows have it as their only blocker?</p>
+  </div>
+
+  <h2>Questions people ask</h2>
+  <details><summary>What happens when I tap a blocked arrow?</summary><p>The arrow slides up to the first thing in its way and bounces back. It counts as a mistake and, in the normal mode, one of your three hearts is spent.</p></details>
+  <details><summary>Can a sheet be impossible?</summary><p>No. Every sheet is generated by building it backwards from an empty board, so a way to clear it always exists. If nothing looks free, re-check the line from each arrow head to the edge.</p></details>
+  <details><summary>How are stars awarded?</summary><p>A sheet with no mistakes earns 3 stars, one mistake 2 stars, and more than that 1 star.</p></details>
+  <details><summary>Is there a mode without hearts?</summary><p>Yes. Zen mode has no hearts; it only counts your mistakes.</p></details>
+  <details><summary>Does an arrow's body matter?</summary><p>Only as an obstacle for other arrows. For whether an arrow itself can leave, only the cell in front of its head and the cells beyond it matter.</p></details>
+
+  <div class="sheet">
+    <h2 style="margin-top:0">If you want more sheets</h2>
+    <p>Foldaway is a mobile arrow puzzle where each solved sheet adds a fold to a paper origami figure. Sheets are generated so they can always be cleared; you get three hearts per sheet, a hold-to-preview path, a hint, and a Zen mode without hearts. It works offline and shows ads (a banner below the board and an occasional full-screen ad between sheets, never in the middle of one). Available on Google Play.</p>
+    <p><a class="btn" href="https://play.google.com/store/apps/details?id=com.appfellas.foldaway&referrer=utm_source%3Dweb%26utm_medium%3Drules_page%26utm_campaign%3Dorganic">Get it on Google Play</a></p>
+  </div>
+
+  <nav class="pages"><a href="./">Foldaway home</a><a href="support.html">Help &amp; contact</a><a href="privacy.html">Privacy policy</a></nav>
+  <footer>&copy; 2026 AppFellas Development</footer>
+</main>
+<script>
+// Port of Foldaway src/engine geometry.firstBlocker / game.tap semantics (ray from head to edge, first occupied cell blocks)
+var W=6,H=5;
+var V={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+var ARROWS=[
+ {id:0,name:'A',dir:'right',cells:[[0,1],[0,0],[1,0],[2,0]]},
+ {id:1,name:'B',dir:'up',cells:[[4,2],[4,1],[4,0]]},
+ {id:2,name:'C',dir:'right',cells:[[0,2],[1,2],[2,2]]},
+ {id:3,name:'D',dir:'up',cells:[[1,4],[1,3]]},
+ {id:4,name:'E',dir:'up',cells:[[5,4],[5,3],[5,2]]},
+ {id:5,name:'F',dir:'right',cells:[[2,4],[3,4],[4,4]]},
+ {id:6,name:'G',dir:'right',cells:[[2,1],[3,1]]},
+ {id:7,name:'H',dir:'right',cells:[[2,3],[3,3]]}
+];
+function grid(alive){var g=[];for(var i=0;i<W*H;i++)g.push(-1);ARROWS.forEach(function(a){if(!alive[a.id])return;a.cells.forEach(function(c){g[c[1]*W+c[0]]=a.id;});});return g;}
+function blocker(alive,a){
+  var g=grid(alive),h=a.cells[a.cells.length-1],v=V[a.dir],x=h[0]+v[0],y=h[1]+v[1];
+  while(x>=0&&y>=0&&x<W&&y<H){var id=g[y*W+x];if(id!==-1)return id;x+=v[0];y+=v[1];}
+  return null;
+}
+function rayOf(a){var h=a.cells[a.cells.length-1],v=V[a.dir],x=h[0]+v[0],y=h[1]+v[1],o=[];while(x>=0&&y>=0&&x<W&&y<H){o.push([x,y]);x+=v[0];y+=v[1];}return o;}
+if(typeof module!=='undefined')module.exports={ARROWS:ARROWS,W:W,H:H,blocker:blocker,rayOf:rayOf};
+
+(function(){
+  var S=52,PAD=0,NS='http://www.w3.org/2000/svg';
+  var COL=['#0B8791','#D55E00','#CC79A7','#0072B2','#E69F00','#009E73','#56B4E9','#7A6BD6'];
+  var svg=document.getElementById('b'),msg=document.getElementById('msg'),cnt=document.getElementById('cnt');
+  var alive,mistakes,done;
+  function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+  function c(v){return v*S+S/2;}
+  function build(){
+    svg.innerHTML='';alive=ARROWS.map(function(){return true;});mistakes=0;done=false;
+    for(var y=0;y<H;y++)for(var x=0;x<W;x++)el('rect',{x:x*S+2,y:y*S+2,width:S-4,height:S-4,rx:8,'class':'cellbg'},svg);
+    var rays=el('g',{id:'raysg',style:'display:none'},svg);
+    ARROWS.forEach(function(a){var r=rayOf(a);if(!r.length)return;var h=a.cells[a.cells.length-1];var l=r[r.length-1];el('line',{x1:c(h[0]),y1:c(h[1]),x2:c(l[0]),y2:c(l[1]),'class':'ray'},rays);});
+    ARROWS.forEach(function(a){
+      var g=el('g',{'class':'ar',id:'a'+a.id,tabindex:0,role:'button','aria-label':'Arrow '+a.name+', pointing '+a.dir},svg);
+      var pts=a.cells.map(function(p){return c(p[0])+','+c(p[1]);}).join(' ');
+      el('polyline',{points:pts,fill:'none',stroke:COL[a.id],'stroke-width':14,'stroke-linecap':'round','stroke-linejoin':'round'},g);
+      var h=a.cells[a.cells.length-1],v=V[a.dir],hx=c(h[0]),hy=c(h[1]),px=-v[1],py=v[0];
+      var tip=[hx+v[0]*20,hy+v[1]*20],b1=[hx+px*13,hy+py*13],b2=[hx-px*13,hy-py*13];
+      el('polygon',{points:tip.join(',')+' '+b1.join(',')+' '+b2.join(','),fill:COL[a.id]},g);
+      el('text',{x:c(a.cells[0][0]),y:c(a.cells[0][1])+4,'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#fff','pointer-events':'none'},g).textContent=a.name;
+      g.addEventListener('click',function(){tap(a);});
+      g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tap(a);}});
+    });
+    update();
+  }
+  function left(){return alive.filter(Boolean).length;}
+  function update(){cnt.textContent='Left: '+left()+' · Mistakes: '+mistakes;}
+  function tap(a){
+    if(done||!alive[a.id])return;
+    var g=document.getElementById('a'+a.id),b=blocker(alive,a);
+    if(b===null){
+      alive[a.id]=false;var v=V[a.dir];g.style.transform='translate('+v[0]*400+'px,'+v[1]*400+'px)';g.classList.add('gone');
+      var n=left();
+      if(n===0){done=true;var stars=mistakes===0?3:mistakes===1?2:1;msg.textContent='Sheet cleared with '+mistakes+' mistake'+(mistakes===1?'':'s')+': '+stars+' star'+(stars===1?'':'s')+'. Press "Start over" to try for a cleaner run.';}
+      else msg.textContent='Arrow '+a.name+' slid off. '+n+' left.';
+    }else{
+      mistakes++;g.classList.remove('shake');void g.getBoundingClientRect();g.classList.add('shake');
+      msg.textContent='Arrow '+a.name+' is blocked by arrow '+ARROWS[b].name+'. In the app that would cost a heart.';
+    }
+    update();
+  }
+  document.getElementById('reset').addEventListener('click',function(){msg.textContent='Free arrows have nothing between their head and the edge.';build();document.getElementById('rays').dispatchEvent(new Event('change'));});
+  document.getElementById('rays').addEventListener('change',function(e){document.getElementById('raysg').style.display=document.getElementById('rays').checked?'':'none';});
+  build();
+})();
+</script>
+</body>
+</html>
